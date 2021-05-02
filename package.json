@@ -12,7 +12,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@hapi/hapi": "^20.1.2"
+    "@hapi/boom": "^9.1.2",
+    "@hapi/hapi": "^20.1.2",
+    "@hapi/inert": "^6.0.3",
+    "@hapi/vision": "^6.0.1",
+    "hapi-swagger": "^14.1.2",
+    "hapi-swaggered": "^3.1.0",
+    "hapi-swaggered-ui": "^3.1.0",
+    "joi": "^17.0.0",
+    "lodash.map": "^4.6.0",
+    "lodash.pick": "^4.4.0",
+    "nanoid": "^3.1.22"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
