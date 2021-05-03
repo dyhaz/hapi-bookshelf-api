@@ -21,6 +21,7 @@ const addBookHandler = (request, h) => {
     }
 
     if (newBook.name) {
+        newBook.finished = pageCount === readPage;
         books.push(newBook);
 
         const isSuccess = books.filter((b) => b.id === id).length > 0;
@@ -101,7 +102,7 @@ const editBookByIdHandler = (request, h) => {
             publisher,
             pageCount,
             readPage,
-            finished,
+            finished: pageCount === readPage,
             reading,
             updatedAt,
         };
