@@ -1,7 +1,5 @@
 const books = require("./books");
 const { nanoid } = require('nanoid');
-const LodashPick = require('lodash.pick');
-const LodashMap = require('lodash.map');
 
 const addBookHandler = (request, h) => {
     const { name, year, author, summary, publisher, pageCount, readPage, finished, reading } = request.payload;
@@ -22,20 +20,22 @@ const addBookHandler = (request, h) => {
         return response;
     }
 
-    books.push(newBook);
+    if (newBook.name) {
+        books.push(newBook);
 
-    const isSuccess = books.filter((b) => b.id === id).length > 0 && newBook.name;
+        const isSuccess = books.filter((b) => b.id === id).length > 0;
 
-    if (isSuccess) {
-        const response = h.response({
-            status: 'success',
-            message: 'Buku berhasil ditambahkan',
-            data: {
-                bookId: id,
-            },
-        });
-        response.code(201);
-        return response;
+        if (isSuccess) {
+            const response = h.response({
+                status: 'success',
+                message: 'Buku berhasil ditambahkan',
+                data: {
+                    bookId: id,
+                },
+            });
+            response.code(201);
+            return response;
+        }
     }
 
     const response = h.response({
@@ -46,12 +46,35 @@ const addBookHandler = (request, h) => {
     return response;
 };
 
-const getAllBooksHandler = (request, h) => ({
-    status: 'success',
-    data: {
-        books: books.map(b => ({id: b.id, name: b.name, publisher: b.publisher}))
-    },
-});
+const getAllBooksHandler = (request, h) => {
+
+    let getBooks = (r) => {
+        const { name, reading, finished } = r.query;
+
+        let result = books.map(b => ({id: b.id, name: b.name, publisher: b.publisher}));
+
+        if (name !== undefined) {
+            return books.filter((b) => b.name.trim().toLowerCase().includes(name.trim().toLowerCase())).map(b => ({id: b.id, name: b.name, publisher: b.publisher}));
+        }
+
+        if (reading === '0' || reading === '1') {
+            return books.filter((b) => (b.reading ? 1 : 0) === parseInt(reading)).map(b => ({id: b.id, name: b.name, publisher: b.publisher}));
+        }
+
+        if (finished === '0' || finished === '1') {
+            return books.filter((b) => (b.finished ? 1 : 0) === parseInt(finished)).map(b => ({id: b.id, name: b.name, publisher: b.publisher}));
+        }
+
+        return result;
+    }
+
+    return {
+        status: 'success',
+        data: {
+            books: getBooks(request)
+        }
+    }
+};
 
 const editBookByIdHandler = (request, h) => {
     const { id } = request.params;
@@ -59,7 +82,16 @@ const editBookByIdHandler = (request, h) => {
     const updatedAt = new Date().toISOString();
     const index = books.findIndex((book) => book.id === id);
 
-    if (index !== -1) {
+    if (readPage > pageCount) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount'
+        });
+        response.code(400);
+        return response;
+    }
+
+    if (index !== -1 && name) {
         books[index] = {
             ...books[index],
             name,
@@ -84,18 +116,18 @@ const editBookByIdHandler = (request, h) => {
 
     const response = h.response({
         status: 'fail',
-        message: 'Gagal memperbarui buku. Id tidak ditemukan',
+        message: name ? 'Gagal memperbarui buku. Id tidak ditemukan' : 'Gagal memperbarui buku. Mohon isi nama buku',
     });
-    response.code(404);
+    response.code(name ? 404 : 400);
     return response;
 };
 
 const deleteBookHandler = (request, h) => {
-    const { id } = request.params;
-    const isAvailable = books.filter((b) => b.id === id).length > 0;
+    const { bookId } = request.params;
+    const isAvailable = books.filter((b) => b.id === bookId).length > 0;
 
     if (isAvailable) {
-        const index = books.findIndex((book) => book.id === id);
+        const index = books.findIndex((book) => book.id === bookId);
 
         if (index !== -1) {
             books.splice(index, 1);

@@ -32,7 +32,7 @@ const init = async () => {
                 path: '/docs',
                 authorization: {
                     field: 'apiKey',
-                    scope: 'query', // header works as well
+                    scope: 'header',
                     // valuePrefix: 'bearer '// prefix incase
                     defaultValue: 'demoKey',
                     placeholder: 'Enter your apiKey here'

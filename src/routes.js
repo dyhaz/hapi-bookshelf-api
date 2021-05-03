@@ -67,7 +67,7 @@ const routes = [
                     pageCount: Joi.number().required(),
                     readPage: Joi.number().required(),
                     finished: Joi.bool().default(false),
-                    reading: Joi.bool().default(false)
+                    reading: Joi.bool()
                 }).meta({ className: 'Book' })
             }
         }
@@ -79,14 +79,7 @@ const routes = [
         options: {
             tags: ['api'],
             description: 'Get all books',
-            notes: 'Get all books',
-            validate: {
-                query: Joi.object({
-                    name: Joi.string().min(3).max(100),
-                    reading: Joi.number().min(0).max(1),
-                    finished: Joi.number().min(0).max(1)
-                })
-            }
+            notes: 'Get all books'
         }
     },
     {
@@ -96,14 +89,7 @@ const routes = [
         options: {
             tags: ['api'],
             description: 'Get detail books',
-            notes: 'Get detail books',
-            validate: {
-                query: Joi.object({
-                    name: Joi.string().min(3).max(100),
-                    reading: Joi.number().min(0).max(1),
-                    finished: Joi.number().min(0).max(1)
-                })
-            }
+            notes: 'Get detail books'
         }
     },
     {
@@ -121,7 +107,7 @@ const routes = [
             notes: 'Add new books',
             validate: {
                 payload: Joi.object({
-                    name: Joi.string().required().min(3).max(100),
+                    name: Joi.string(),
                     author: Joi.string().required(),
                     year: Joi.number().required().greater(1800),
                     summary: Joi.string().required(),
@@ -129,7 +115,7 @@ const routes = [
                     pageCount: Joi.number().required(),
                     readPage: Joi.number().required(),
                     finished: Joi.bool().default(false),
-                    reading: Joi.bool().default(false)
+                    reading: Joi.bool()
                 }).meta({ className: 'Book' })
             }
         }
@@ -144,7 +130,7 @@ const routes = [
             notes: 'Delete books',
             validate: {
                 params: Joi.object({
-                    bookID: Joi.string().required()
+                    bookId: Joi.string().required()
                 })
             }
         }
